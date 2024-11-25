@@ -1,0 +1,6 @@
+{
+  "appId": "com.restoran.app",
+  "appName": "restoran",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
