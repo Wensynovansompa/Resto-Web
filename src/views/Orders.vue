@@ -35,6 +35,9 @@
                       {{ index + 1 + (page - 1) * 10 }}
                     </td>
                     <td>
+                      {{ item.name }}
+                    </td>
+                    <td>
                       {{ item.invoice_number }}
                     </td>
                     <td>Rp. {{ item.total_bill }}</td>
@@ -112,6 +115,9 @@
                   <tr>
                     <td>
                       {{ index + 1 + (page - 1) * 10 }}
+                    </td>
+                    <td>
+                      {{ item.name }}
                     </td>
                     <td>
                       {{ item.invoice_number }}
@@ -227,8 +233,9 @@ export default {
       lengthPageHistory: 0,
       headers: [
         { text: "No", value: "id" },
+        { text: "Name", value: "name" },
         { text: "Invoice", value: "invoice_number" },
-        { text: "Total Price", value: "total_bill" },
+        { text: "Tottal Price", value: "total_bill" },
         { text: "Date", value: "created_at" },
         { text: "Status", value: "status" },
         { text: "Proof Of Payment" },
@@ -237,8 +244,9 @@ export default {
       ],
       headersHistory: [
         { text: "No", value: "id" },
+        { text: "Name", value: "name" },
         { text: "Invoice", value: "invoice_number" },
-        { text: "Total Price", value: "total_bill" },
+        { text: "Tottal Price", value: "total_bill" },
         { text: "Date", value: "created_at" },
         { text: "Status", value: "status" },
         { text: "Proof Of Payment" },

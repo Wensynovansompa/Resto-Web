@@ -300,7 +300,7 @@ export default {
               color: "success",
               text: "Register success",
             });
-            this.closeCustomer();
+            this.isHome();
           })
           .catch((error) => {
             let { data } = error.response;
@@ -313,6 +313,10 @@ export default {
 
         this.progressBar = false;
       }
+    },
+    isHome() {
+      this.step++;
+      return this.$router.push({ path: "/" });
     },
   },
 };

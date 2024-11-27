@@ -18,85 +18,157 @@
         </v-row>
       </v-card-text>
 
-      <v-container
-        fluid
-        id="scroll-target"
-        style="height: 300px"
-        class="overflow-y-auto"
-      >
-        <div v-if="countCart === 0">
-          <v-alert outlined color="warning" icon="mdi-cart-off">
-            Empty shopping cart!
-          </v-alert>
-        </div>
-        <v-simple-table v-if="countCart > 0" v-scroll:#scroll-target="onScroll">
-          <template v-slot:default>
-            <thead>
-              <tr>
-                <th class="text-left">Name</th>
-                <th class="text-left">Price</th>
-                <th class="text-left">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(item, index) in carts" :key="'cart' + index">
-                <td style="width: 30%">
-                  {{ item.title }}
-                </td>
-
-                <td style="width: 30%">{{ item.price }}</td>
-                <td style="width: 30%">
-                  <v-btn
-                    icon
-                    small
-                    rounded
-                    depressed
-                    @click.stop="removeCart(item)"
-                  >
-                    <v-icon dark color="error">mdi-minus-circle</v-icon>
-                  </v-btn>
-                  {{ item.quantity }}
-                  <v-btn
-                    icon
-                    small
-                    rounded
-                    depressed
-                    @click.stop="addCart(item)"
-                  >
-                    <v-icon dark color="success">mdi-plus-circle</v-icon>
-                  </v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </template>
-        </v-simple-table>
-      </v-container>
-      <v-card-text>
-        <span> {{ chairName }}</span>
-        <br />
-        <v-col cols="bg" class="text-center"
-          ><v-layout wrap>
-            <v-flex pa-1 xs6>
-              <span class="title"
-                >Total Rp. {{ totalPrice.toLocaleString("id-ID") }}</span
-              >
-            </v-flex>
-            <v-flex pa-1 xs6 v-if="!guest">
-              <div v-if="countCart != 0">
-                <v-btn
-                  color="#1b5e20"
-                  @click="checkout"
-                  :disabled="totalQuantity == 0"
-                  class="white--text"
-                >
-                  <v-icon color="white">mdi-cart-arrow-right</v-icon> &nbsp;
-                  Checkout
-                </v-btn>
+      <v-tabs color="#1b5e20">
+        <v-tab>Shopping cart</v-tab>
+        <v-tab>History Orders</v-tab>
+        <v-tab-item>
+          <v-card>
+            <v-container
+              fluid
+              id="scroll-target"
+              style="height: 300px"
+              class="overflow-y-auto"
+            >
+              <div v-if="countCart === 0">
+                <v-alert outlined color="warning" icon="mdi-cart-off">
+                  Empty shopping cart!
+                </v-alert>
               </div>
-            </v-flex>
-          </v-layout>
-        </v-col>
-      </v-card-text>
+              <v-simple-table
+                v-if="countCart > 0"
+                v-scroll:#scroll-target="onScroll"
+              >
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th class="text-left">Name</th>
+                      <th class="text-left">Price</th>
+                      <th class="text-left">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, index) in carts" :key="'cart' + index">
+                      <td style="width: 30%">
+                        {{ item.title }}
+                      </td>
+
+                      <td style="width: 30%">{{ item.price }}</td>
+                      <td style="width: 30%">
+                        <v-btn
+                          icon
+                          small
+                          rounded
+                          depressed
+                          @click.stop="removeCart(item)"
+                        >
+                          <v-icon dark color="error">mdi-minus-circle</v-icon>
+                        </v-btn>
+                        {{ item.quantity }}
+                        <v-btn
+                          icon
+                          small
+                          rounded
+                          depressed
+                          @click.stop="addCart(item)"
+                        >
+                          <v-icon dark color="success">mdi-plus-circle</v-icon>
+                        </v-btn>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+            </v-container>
+            <v-card-text>
+              <span> {{ chairName }}</span>
+              <br />
+              <v-col cols="bg" class="text-center"
+                ><v-layout wrap>
+                  <v-flex pa-1 xs6>
+                    <span class="title"
+                      >Total Rp. {{ totalPrice.toLocaleString("id-ID") }}</span
+                    >
+                  </v-flex>
+
+                  <v-flex pa-1 xs6 v-if="!guest">
+                    <div v-if="countCart != 0 && this.chairId != null">
+                      <v-btn
+                        color="#1b5e20"
+                        @click="checkout"
+                        :disabled="totalQuantity == 0"
+                        class="white--text"
+                      >
+                        <v-icon color="white">mdi-cart-arrow-right</v-icon>
+                        &nbsp; Checkout
+                      </v-btn>
+                    </div>
+                  </v-flex>
+                </v-layout>
+              </v-col>
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
+        <v-tab-item>
+          <v-card>
+            <v-card-title>
+              <v-spacer></v-spacer>
+              <v-text-field
+                v-model="keywordHistory"
+                append-icon="mdi-magnify"
+                label="Search"
+                single-line
+                hide-details
+                @input="doSearchHistoryMyOrder"
+              >
+              </v-text-field>
+            </v-card-title>
+            <v-data-table
+              ref="vDataTableHistory"
+              :headers="headers"
+              :items="ordersHistory"
+              hide-default-footer
+              class="elevation-0"
+            >
+              <template #item="{ item, index, headers }">
+                <tr>
+                  <td>
+                    {{ index + 1 + (page - 1) * 10 }}
+                  </td>
+                  <td>
+                    {{ item.invoice_number }}
+                  </td>
+                  <td>Rp. {{ item.total_bill }}</td>
+                  <td>
+                    {{ item.updated_at }}
+                  </td>
+                  <td>
+                    {{ item.status }}
+                  </td>
+                  <td>
+                    <router-link
+                      :to="{ name: 'payment-order', params: { id: item.id } }"
+                    >
+                      <v-icon large class="mr-2" color="blue">
+                        mdi-download-box
+                      </v-icon>
+                    </router-link>
+                  </td>
+                </tr>
+              </template>
+            </v-data-table>
+            <div class="text-center">
+              <v-pagination
+                v-model="page"
+                @input="goHistory"
+                :length="lengthPage"
+                :total-visible="5"
+                color="green accent-3"
+              >
+              </v-pagination>
+            </div>
+          </v-card>
+        </v-tab-item>
+      </v-tabs>
 
       <div class="text-center">
         <v-dialog v-model="dialogCheckout" class="blue---text" max-height="500">
@@ -201,7 +273,18 @@ export default {
     progress: false,
     orderId: "",
     orders: "",
-    product_order: [],
+    keywordHistory: "",
+    page: 0,
+    lengthPage: 0,
+    ordersHistory: [],
+    headers: [
+      { text: "No", value: "id" },
+      { text: "Invoice", sortable: false },
+      { text: "Total Price", sortable: false },
+      { text: "Date", sortable: false },
+      { text: "Status", sortable: false },
+      { text: "Proof Of Payment", sortable: false },
+    ],
     selectedFile: null,
     editedItem: {
       store: "",
@@ -225,6 +308,7 @@ export default {
   },
   created() {
     this.go();
+    this.goHistory();
   },
   methods: {
     ...mapActions({
@@ -336,6 +420,48 @@ export default {
           let { responses } = error;
           console.log(responses);
         });
+    },
+    goHistory() {
+      let config = {
+        headers: {
+          Authorization: "Bearer " + this.user.api_token,
+        },
+      };
+      let url = "/my-order?page=" + this.page;
+      this.axios
+        .get(url, config)
+        .then((response) => {
+          let { data } = response.data;
+          let { meta } = response.data;
+          this.ordersHistory = data;
+          this.lengthPage = meta.last_page;
+          this.page = meta.current_page;
+        })
+        .catch((error) => {
+          let { responses } = error;
+          console.log(responses);
+        });
+    },
+    doSearchHistoryMyOrder() {
+      let config = {
+        headers: {
+          Authorization: "Bearer " + this.user.api_token,
+        },
+      };
+      let keyword = this.keywordHistory;
+      if (keyword.length > 0) {
+        this.axios
+          .get("/orders/search-history-my-order/" + keyword, config)
+          .then((response) => {
+            let { data } = response.data;
+            this.ordersHistory = data;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        this.goHistory();
+      }
     },
   },
 };
